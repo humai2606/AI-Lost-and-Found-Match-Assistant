@@ -1,0 +1,6 @@
+streamlit
+pytesseract
+Pillow
+opencv-python
+sentence-transformers
+scikit-learn
