@@ -3,20 +3,33 @@ import pytesseract
 from PIL import Image
 import cv2
 import numpy as np
+import shutil
+
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
+
+tesseract_path = shutil.which("tesseract")
+
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+else:
+    pytesseract.pytesseract.tesseract_cmd = (
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    )
+
+
 def extract_text(image):
-    # PIL Image -> NumPy array
+   
     image_np = np.array(image)
 
-    # RGB -> BGR
+    
     image_cv = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
 
-    # Convert to grayscale
+   
     gray = cv2.cvtColor(image_cv, cv2.COLOR_BGR2GRAY)
 
-    # Resize for better OCR
     gray = cv2.resize(
         gray,
         None,
@@ -25,7 +38,7 @@ def extract_text(image):
         interpolation=cv2.INTER_CUBIC
     )
 
-    # Threshold
+   
     _, threshold = cv2.threshold(
         gray,
         0,
@@ -33,7 +46,7 @@ def extract_text(image):
         cv2.THRESH_BINARY + cv2.THRESH_OTSU
     )
 
-    # OCR
+
     text = pytesseract.image_to_string(threshold)
 
     return text.strip()
